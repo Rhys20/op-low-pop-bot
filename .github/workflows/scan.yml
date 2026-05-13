@@ -1,0 +1,37 @@
+name: OP Low Pop Bot
+
+on:
+  schedule:
+    - cron: '*/30 * * * *'   # every 30 minutes
+  workflow_dispatch:          # allows manual trigger from GitHub UI
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write         # needed to commit seen_ids.json back
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run bot
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        run: python bot.py
+
+      - name: Save seen IDs back to repo
+        run: |
+          git config user.name "OP Bot"
+          git config user.email "bot@noreply"
+          git add seen_ids.json || true
+          git diff --staged --quiet || git commit -m "chore: update seen_ids [skip ci]"
+          git push || true
