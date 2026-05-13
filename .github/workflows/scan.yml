@@ -2,14 +2,14 @@ name: OP Low Pop Bot
 
 on:
   schedule:
-    - cron: '*/30 * * * *'   # every 30 minutes
-  workflow_dispatch:          # allows manual trigger from GitHub UI
+    - cron: '*/30 * * * *'
+  workflow_dispatch:
 
 jobs:
   scan:
     runs-on: ubuntu-latest
     permissions:
-      contents: write         # needed to commit seen_ids.json back
+      contents: write
 
     steps:
       - name: Checkout repo
